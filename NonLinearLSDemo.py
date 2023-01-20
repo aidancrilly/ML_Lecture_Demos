@@ -110,5 +110,4 @@ ax1.set_ylabel(r"$\sigma$")
 ax2.set_xlabel('x')
 ax2.set_ylabel('y')
 
-
 plt.show()
