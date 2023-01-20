@@ -45,5 +45,9 @@ plt.plot(X_trial,mu_cond-np.sqrt(np.diag(sig_cond)),'b--')
 
 plt.plot(X_trial,f_true(X_trial),'k',label='True function')
 
+plt.xlim(0.0,1.0)
+
 plt.legend()
 plt.show()
+
+
