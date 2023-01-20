@@ -8,7 +8,7 @@ def f_true(x,lamb=2e0,omega=2e1):
 
 def correlation_function(x1,x2,theta):
 	""" Correlation function or kernal of the GP, we will use a Gaussian with length scale theta """
-	return np.exp(-((x1-x2)/theta)**2)
+	return np.exp(-0.5*((x1-x2)/theta)**2)
 
 def correlation_matrix(x,theta):
 	""" Construct correlation matrix using correlation function """
