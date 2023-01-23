@@ -2,6 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 
+np.random.seed(10)
+
+N_known = 8
+X_known = np.random.rand(N_known)
+Y_known = f_true(X_known)
+
+
 def f_true(x,lamb=2e0,omega=2e1):
 	""" Function we will draw samples from """
 	return np.cos(omega*x)*np.exp(-lamb*x)
@@ -34,21 +41,17 @@ def neg_log_likelihood(theta,x,y):
 def conditional_distribution(x_trial,x_known,y_known,sigma,theta):
 	""" Calculate p(x_trial | x_known,y_known) for given values of sigma and theta """
 	x_total = np.concatenate((x_trial,x_known),axis=0)
-	N_trail = x_trial.shape[0]
+	N_trial = x_trial.shape[0]
 	corr    = sigma**2*correlation_matrix(x_total,theta)
-	corr_11 = corr[:N_trail,:N_trail]
-	corr_12 = corr[:N_trail,N_trail:]
+	corr_11 = corr[:N_trial,:N_trial]
+	corr_12 = corr[:N_trial,N_trial:]
 	corr_21 = corr_12.T
-	corr_22 = corr[N_trail:,N_trail:]
+	corr_22 = corr[N_trial:,N_trial:]
 	# Note unconditional mu = 0
 	corr_22_inv = np.linalg.inv(corr_22)
 	mu_cond  = np.dot(np.matmul(corr_12,corr_22_inv),y_known)
 	sig_cond = corr_11 - np.matmul(corr_12,np.matmul(corr_22_inv,corr_21))
 	return mu_cond,sig_cond
-
-N_known = 8
-X_known = np.random.rand(N_known)
-Y_known = f_true(X_known)
 
 res = minimize(neg_log_likelihood,0.1,args=(X_known,Y_known))
 
