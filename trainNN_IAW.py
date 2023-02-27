@@ -1,3 +1,4 @@
+""" A demonstration of training a Multi-Layer-Perceptron (MLP) neural network on Thomson Ion Acoustic Wave (IAW) features """
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -7,11 +8,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from keras_visualizer import visualizer 
 
+# Are we loading the NN model from a .h5 file?
 load  = True
+# Are we training the model or using it for prediction?
 train = False
+# If training, how many times (epochs) are we running through the data 
 Nepochs = 100
+# File where training history is saved
 history_file = './NNModels/IAW_history.npy'
+# NN model file
 model_file = "./NNModels/DeepIAW.h5"
+# IAW data file
 data_file = './data/Skw_features_532nm_MagPy_v1.1.csv'
 
 def appendHist(h1, h2):
@@ -38,32 +45,40 @@ def standardise_data(train_X, test_X, train_Y, test_Y):
 	test_Y = output_scaler.transform(test_Y)
 	return train_X, test_X, train_Y, test_Y, output_scaler
 
-def get_model(load):
+def get_model(load,input_size):
 	""" Load NN model from file or create it 
 	    we will use a MSE loss function and the adam optimizer (which is an adaptive variant of gradient descent)"""
 	if(load):
 		model = load_model("./NNModels/DeepIAW.h5")
 		history = np.load(history_file,allow_pickle='TRUE').item()
 	else:
-		# define the keras model
+		# Define the Keras/Tensorflow model
 		model = Sequential()
+		# Input layer takes in data vector of length input_size and passes it to next layer
 		model.add(InputLayer(input_shape=(input_size,)))
+		# Dense layer is fully-connected, with 32 nodes, applies weights and biases followed by a rectified linear, 'relu', activation
 		model.add(Dense(32, input_shape=(input_size,), activation='relu'))
+		# Similar Dense layer with tanh activation layer
 		model.add(Dense(32, activation='tanh'))
+		# Output layer applies no activation so is linear
 		model.add(Dense(output_size))
 
 		model.summary()
 
+		# Finalise the NN model with what loss function to optimise and what algorithm to use for optimisation
 		model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
 		history = {}
+
 	return model,history
 
 # Load data
 data = np.loadtxt(data_file,delimiter=',')
+# Separate into input, X, and output, Y
 X = data[:,2:9]
 Y = data[:,9:]
 
-# Split into training and test data
+# Split into training and test data with (80/20) split
+# Splitting the data allows you to more easily detect overfitting
 train_test_split_state = 24
 train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.20, random_state=train_test_split_state)
 
@@ -74,9 +89,9 @@ input_size = train_X.shape[1]
 output_size = train_Y.shape[1]
 
 # Load or construct NN model
-model,history = get_model(load)
+model,history = get_model(load,input_size)
 
-# fit model
+# If we are training, fit model
 if(train):
 	train_history = model.fit(train_X, train_Y, validation_data=(test_X, test_Y), epochs=Nepochs, verbose=0)
 

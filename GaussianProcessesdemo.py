@@ -1,13 +1,7 @@
+""" Demonstration of fitting of Gaussian Processes (GP) to sample data """
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-
-np.random.seed(10)
-
-N_known = 8
-X_known = np.random.rand(N_known)
-Y_known = f_true(X_known)
-
 
 def f_true(x,lamb=2e0,omega=2e1):
 	""" Function we will draw samples from """
@@ -42,25 +36,34 @@ def conditional_distribution(x_trial,x_known,y_known,sigma,theta):
 	""" Calculate p(x_trial | x_known,y_known) for given values of sigma and theta """
 	x_total = np.concatenate((x_trial,x_known),axis=0)
 	N_trial = x_trial.shape[0]
+	# Compute total correlation matrix
 	corr    = sigma**2*correlation_matrix(x_total,theta)
 	corr_11 = corr[:N_trial,:N_trial]
 	corr_12 = corr[:N_trial,N_trial:]
 	corr_21 = corr_12.T
 	corr_22 = corr[N_trial:,N_trial:]
-	# Note unconditional mu = 0
+	# Compute conditional probability given correlation matrix, note unconditional mu = 0
 	corr_22_inv = np.linalg.inv(corr_22)
 	mu_cond  = np.dot(np.matmul(corr_12,corr_22_inv),y_known)
 	sig_cond = corr_11 - np.matmul(corr_12,np.matmul(corr_22_inv,corr_21))
 	return mu_cond,sig_cond
 
-res = minimize(neg_log_likelihood,0.1,args=(X_known,Y_known))
+np.random.seed(10)
+# Set up sample data
+N_known = 8
+X_known = np.random.rand(N_known)
+Y_known = f_true(X_known)
 
+# Fit maximum likelihood of free parameter, correlation length scale, from known data
+res = minimize(neg_log_likelihood,0.1,args=(X_known,Y_known))
+# Compute GP properties from maximum likelihood result
 theta_opt = res.x[0]
 corr_opt  = correlation_matrix(X_known,theta_opt)
 sigma_opt = np.sqrt(sigma2_MLE(corr_opt,Y_known))
 
+# Trial points
 X_trial = np.linspace(0.0,1.0,100)
-
+# Compute conditional mean and variance using GP
 mu_cond,sig_cond = conditional_distribution(X_trial,X_known,Y_known,sigma_opt,theta_opt)
 
 plt.scatter(X_known,Y_known,marker='D',label='Data')

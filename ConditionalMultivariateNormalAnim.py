@@ -1,7 +1,10 @@
+""" Animation script showing the change in the conditional probability from a bivariate normal distribution """
 import numpy as np
 import matplotlib.pyplot as plt
 
 def bivariate_normal(v,mu,covar):
+	""" Given 2D position v, mean mu and covariance matrix covar,
+	computes the bivariate normal probability """
 	covar_inv = np.linalg.inv(covar)
 	d = v-mu
 	const = 1/((2*np.pi)*np.sqrt(np.linalg.det(covar)))
@@ -9,6 +12,7 @@ def bivariate_normal(v,mu,covar):
 	return p
 
 def cond_univariate_normal(x,y_data,mu,covar):
+	""" Computes the conditional probability p(x|y) of a bivariate normal """
 	mu_cond = mu[0] + covar[0,1]/covar[1,1]*(y_data-mu[1])
 	sig2_cond = covar[0,0] - covar[0,1]*covar[1,0]/covar[1,1]
 	return np.exp(-0.5*(x-mu_cond)**2/sig2_cond)/np.sqrt(2*np.pi*sig2_cond)
@@ -25,6 +29,7 @@ sig2 = 1.0
 
 Nrot = 30
 for i in range(Nrot):
+	# Cycle through various correlation values, r
 	r = -0.9+1.8*(i/(Nrot-1))
 
 	fig = plt.figure(dpi=200,figsize=(3,6))

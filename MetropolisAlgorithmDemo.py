@@ -2,11 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def f(x):
+	""" Function for which we want to find the PDF """
 	d = x - mu
 	arg = np.dot(d.T,np.dot(inv_corr,d))
 	return np.exp(-0.5*arg)
 
 def J(x):
+	""" Normal jump function, given input x suggest a new postion y, centred on x """
 	y = np.random.multivariate_normal(mean=x,cov=jump_size*np.eye(x.size))
 	return y
 
@@ -27,16 +29,21 @@ x2_arr = np.array([])
 u = 1.0
 alpha = 0.0
 for i in range(chain_length):
-	while(u > alpha):
-		y = J(x)
-		u = np.random.rand()
-		alpha = f(y)/f(x)
+	# Acceptance criterion
+	while(u > alpha): 
+		y = J(x) # Suggest new location
+		u = np.random.rand() # Create random number in range 0 to 1 
+		alpha = f(y)/f(x) # Compute ratio of function at trial point and current point
+
+	# When new trial point accepted, move to this new point
 	x = y
+	# Reset u and alpha such that the acceptance criterion is no longer satisfied for next trial point
 	u = 1.0
 	alpha = 0.0
 	x1_arr = np.append(x1_arr,x[0])
 	x2_arr = np.append(x2_arr,x[1])
 
+	# Plotting script
 	if(i % 1000 == 0):
 		# Initialise figure
 		fig = plt.figure(dpi=200,figsize=(6,3))

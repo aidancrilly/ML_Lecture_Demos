@@ -1,3 +1,4 @@
+""" Demo showing a un-regularised and regularised linear algebra deconvolution """
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -23,9 +24,11 @@ signal = np.dot(IRF,truth)+noise_amp*np.random.normal(size=Nx)
 
 # Straight deconvolution
 deconv_signal = np.dot(np.linalg.pinv(IRF),signal)
+
 # Deconvolution with regularisation
 RTR = np.dot(IRF.T,IRF)
 RTsignal = np.dot(IRF.T,signal)
+# Setting up finite difference matrix, forward differencing
 D_matrix = (-1*np.eye(Nx)+1*np.eye(Nx,k=1))/(dx)
 DTD = np.dot(D_matrix.T,D_matrix)
 regularised_inv = np.linalg.inv(RTR+lamb*DTD)

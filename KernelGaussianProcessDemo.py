@@ -1,3 +1,4 @@
+""" Demo illustrating the Gaussian Process (GP) interpolation between 2 known data points using a Gaussian kernel """
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -6,21 +7,26 @@ mpl.rcParams['text.usetex'] = True
 mpl.rcParams['text.latex.preamble'] = r'\usepackage{{amsmath}}'
 
 def kernel(x1,x2,l=0.2):
+	""" Gaussian kernel with length scale, l """
 	return np.exp(-0.5*((x1-x2)/l)**2)
 
+# Known data at 2 locations
 x_known = np.array([0.2,0.8])
 y_known = np.array([-1.0,1.0])
+
+
 x_plot = np.linspace(-0.2,1.2,100)
 
 Nx = 50
 x_pos = np.linspace(x_known[0],x_known[1],Nx)
 y_pred = []
 for i,x0 in enumerate(x_pos):
+	# x0 is prediction point, x1 and x2 are known data
 	x1,x2 = x_known
 	r01 = kernel(x0,x1)
 	r02 = kernel(x0,x2)
 	r12 = kernel(x1,x2)
-
+	# Computing GP correlation matrix between known data and prediction point
 	R_matrix = np.array([[1.0,r01,r02],
 						 [r01,1.0,r12],
 						 [r02,r12,1.0]])
@@ -29,7 +35,7 @@ for i,x0 in enumerate(x_pos):
 	R22 = R_matrix[1:,1:]
 	R21 = R_matrix[0,1:]
 	inv_R22 = np.linalg.inv(R22)
-
+	# Conditional mean with zero mean function
 	E_y0 = 0.0+np.dot(R12,np.dot(inv_R22,y_known-0.0))
 	y_pred.append(E_y0)
 

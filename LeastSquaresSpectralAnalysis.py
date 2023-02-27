@@ -11,6 +11,7 @@ def cos_basis_matrix(Nm,Nx,t):
 	return A,k
 
 def trial_function(t,omega1=8,omega2=4):
+	""" Trial function on which we will perform LSSA """
 	y = (np.cos(omega1*np.pi*t)+np.cos(omega2*np.pi*t))*np.exp(-t**2)
 	return y
 
