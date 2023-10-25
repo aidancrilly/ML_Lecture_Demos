@@ -14,16 +14,16 @@ def B_matrix(spline_order,knots,x):
 	Matrix B is constructed such that B.A gives a spline f(x) where A is a vector of spline amplitudes
 
 	"""
-    Nx     = x.shape[0]
-    Nknots = knots.shape[0]
-    Nc     = Nknots-spline_order
-    B_k    = np.zeros((Nx,Nc))
-    for i in range(Nc):
-        c = np.zeros(Nc)
-        c[i] = 1.0
-        B = BSpline(knots, c, spline_order-1)
-        B_k[:,i] = B(x)
-    return B_k
+	Nx     = x.shape[0]
+	Nknots = knots.shape[0]
+	Nc     = Nknots-spline_order
+	B_k    = np.zeros((Nx,Nc))
+	for i in range(Nc):
+		c = np.zeros(Nc)
+		c[i] = 1.0
+		B = BSpline(knots, c, spline_order-1)
+		B_k[:,i] = B(x)
+	return B_k
 
 # Total number of data points being fit to
 Nx    = 40

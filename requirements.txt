@@ -1,0 +1,9 @@
+numpy
+scipy
+matplotlib
+jax
+jaxlib
+tensorflow
+keras
+keras-visualizer
+scikit-learn
