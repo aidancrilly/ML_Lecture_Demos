@@ -17,3 +17,7 @@ The required python library requirements are given in requirements.txt which can
 ```
 pip install -r requirements.txt
 ```
+
+Lecture recording on YouTube:
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/lTAUwWVcLXc/0.jpg)](http://www.youtube.com/watch?v=lTAUwWVcLXc)
