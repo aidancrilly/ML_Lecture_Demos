@@ -30,8 +30,3 @@ TO BE UPLOADED
 2023:
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/lTAUwWVcLXc/0.jpg)](http://www.youtube.com/watch?v=lTAUwWVcLXc)
-=======
-Lecture recording on YouTube:
-
-[![IMAGE ALT TEXT](http://img.youtube.com/vi/lTAUwWVcLXc/0.jpg)](http://www.youtube.com/watch?v=lTAUwWVcLXc)
-
