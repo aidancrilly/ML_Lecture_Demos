@@ -21,6 +21,7 @@ The required python library requirements are given in requirements.txt which can
 pip install -r requirements.txt
 ```
 
+<<<<<<< HEAD
 Lecture recordings on YouTube:
 
 2024:
@@ -30,3 +31,8 @@ TO BE UPLOADED
 2023:
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/lTAUwWVcLXc/0.jpg)](http://www.youtube.com/watch?v=lTAUwWVcLXc)
+=======
+Lecture recording on YouTube:
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/lTAUwWVcLXc/0.jpg)](http://www.youtube.com/watch?v=lTAUwWVcLXc)
+>>>>>>> 4f651cbe94b3b46f957cceb9519143cbe8ccb97d
