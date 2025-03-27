@@ -48,34 +48,35 @@ def conditional_distribution(x_trial,x_known,y_known,sigma,theta):
 	sig_cond = corr_11 - np.matmul(corr_12,np.matmul(corr_22_inv,corr_21))
 	return mu_cond,sig_cond
 
-np.random.seed(10)
-# Set up sample data
-N_known = 8
-X_known = np.random.rand(N_known)
-Y_known = f_true(X_known)
+if __name__ == '__main__':
+	np.random.seed(10)
+	# Set up sample data
+	N_known = 8
+	X_known = np.random.rand(N_known)
+	Y_known = f_true(X_known)
 
-# Fit maximum likelihood of free parameter, correlation length scale, from known data
-res = minimize(neg_log_likelihood,0.1,args=(X_known,Y_known))
-# Compute GP properties from maximum likelihood result
-theta_opt = res.x[0]
-corr_opt  = correlation_matrix(X_known,theta_opt)
-sigma_opt = np.sqrt(sigma2_MLE(corr_opt,Y_known))
+	# Fit maximum likelihood of free parameter, correlation length scale, from known data
+	res = minimize(neg_log_likelihood,0.1,args=(X_known,Y_known))
+	# Compute GP properties from maximum likelihood result
+	theta_opt = res.x[0]
+	corr_opt  = correlation_matrix(X_known,theta_opt)
+	sigma_opt = np.sqrt(sigma2_MLE(corr_opt,Y_known))
 
-# Trial points
-X_trial = np.linspace(0.0,1.0,100)
-# Compute conditional mean and variance using GP
-mu_cond,sig_cond = conditional_distribution(X_trial,X_known,Y_known,sigma_opt,theta_opt)
+	# Trial points
+	X_trial = np.linspace(0.0,1.0,100)
+	# Compute conditional mean and variance using GP
+	mu_cond,sig_cond = conditional_distribution(X_trial,X_known,Y_known,sigma_opt,theta_opt)
 
-plt.scatter(X_known,Y_known,marker='D',label='Data')
-plt.plot(X_trial,mu_cond,'b',label='GP mean')
-plt.plot(X_trial,mu_cond+np.sqrt(np.diag(sig_cond)),'b--',label='GP confidence interval')
-plt.plot(X_trial,mu_cond-np.sqrt(np.diag(sig_cond)),'b--')
+	plt.scatter(X_known,Y_known,marker='D',label='Data')
+	plt.plot(X_trial,mu_cond,'b',label='GP mean')
+	plt.plot(X_trial,mu_cond+np.sqrt(np.diag(sig_cond)),'b--',label='GP confidence interval')
+	plt.plot(X_trial,mu_cond-np.sqrt(np.diag(sig_cond)),'b--')
 
-plt.plot(X_trial,f_true(X_trial),'k',label='True function')
+	plt.plot(X_trial,f_true(X_trial),'k',label='True function')
 
-plt.xlim(0.0,1.0)
+	plt.xlim(0.0,1.0)
 
-plt.legend()
-plt.show()
+	plt.legend()
+	plt.show()
 
 
