@@ -25,7 +25,7 @@ Lecture recordings on YouTube:
 
 2024:
 
-TO BE UPLOADED
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/lTAUwWVcLXc/0.jpg)](https://youtu.be/kst4-cwMNKc)
 
 2023:
 
