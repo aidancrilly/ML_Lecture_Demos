@@ -3,7 +3,9 @@ scipy
 matplotlib
 jax
 jaxlib
-tensorflow
-keras
-keras-visualizer
+optax
+equinox
 scikit-learn
+torch
+torchvision
+torchaudio

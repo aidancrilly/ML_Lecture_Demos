@@ -1,8 +1,8 @@
 """
-Demonstration of Training a Neural Network for Physics Data Analysis.
+Demonstration of Training a Neural Network for Physics Data Analysis using PyTorch.
 
 This script provides a complete workflow for training and evaluating a Multi-Layer 
-Perceptron (MLP) neural network using TensorFlow and Keras. The network is designed 
+Perceptron (MLP) neural network using PyTorch. The network is designed 
 to predict physical parameters from features of Ion Acoustic Wave (IAW) Thomson scattering
 spectra.
 
@@ -17,9 +17,9 @@ The script's workflow includes:
 3.  **Preprocessing**: Splitting the data into training and testing sets to evaluate 
     generalization, and standardizing the data (scaling to zero mean and unit variance), 
     which is a crucial step for efficient neural network training.
-4.  **Model Architecture**: Defining a sequential Keras model with several dense (fully-connected) 
+4.  **Model Architecture**: Defining a sequential PyTorch model with several dense (fully-connected) 
     layers and different activation functions (ReLU, tanh).
-5.  **Training**: If training is enabled, the script compiles the model with a loss function 
+5.  **Training**: If training is enabled, the script defines a loss function 
     (Mean Squared Error) and an optimizer (Adam), then fits the model to the training data. 
     The model and its training history are saved.
 6.  **Evaluation**: The script plots the training and validation loss over epochs to monitor 
@@ -28,30 +28,34 @@ The script's workflow includes:
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import tensorflow as tf
-from keras.models import Sequential, load_model
-from keras.layers import Dense, InputLayer
+import torch
+import torch.nn as nn
+import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+import os
 
 # --- Configuration ---
 # Set these flags to control the script's behavior.
 
 # If True, load a pre-trained model from `model_file`. If False, create a new model.
-load_model_flag = True
+load_model_flag = False
 # If True, train the model. If False, only load and evaluate it.
-train_model_flag = False
+train_model_flag = True
 # Number of epochs (passes through the entire training dataset) for training.
-Nepochs = 100
+Nepochs = 400
 
 # File paths
-history_file = './NNModels/IAW_history.npy'
-model_file = "./NNModels/DeepIAW.h5"
+history_file = './NNModels/IAW_history_pytorch.npy'
+model_file = "./NNModels/DeepIAW_pytorch.pth"
 data_file = './data/Skw_features_532nm_MagPy_v1.1.csv'
+
+# Ensure the NNModels directory exists
+os.makedirs('./NNModels', exist_ok=True)
 
 def appendHist(h1, h2):
     """
-    Appends a new Keras history dictionary to an existing one.
+    Appends a new history dictionary to an existing one.
 
     This is useful for continuing the training of a model and keeping a complete 
     record of the loss and metrics over all training sessions.
@@ -100,11 +104,25 @@ def standardise_data(train_X, test_X, train_Y, test_Y):
     test_Y = output_scaler.transform(test_Y)
     return train_X, test_X, train_Y, test_Y, output_scaler
 
+class MLP(nn.Module):
+    def __init__(self, input_size, output_size):
+        super(MLP, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(input_size, 32),
+            nn.ReLU(),
+            nn.Linear(32, 32),
+            nn.Tanh(),
+            nn.Linear(32, output_size)
+        )
+
+    def forward(self, x):
+        return self.layers(x)
+
 def get_model(load, input_size, output_size):
     """
-    Loads a Keras model from a file or creates a new one.
+    Loads a PyTorch model from a file or creates a new one.
 
-    The new model is a simple Multi-Layer Perceptron (MLP) with two hidden layers.
+    The new model is a simple Multi-Layer Perceptron (MLP).
 
     Args:
         load (bool): If True, load the model from `model_file`.
@@ -112,34 +130,19 @@ def get_model(load, input_size, output_size):
         output_size (int): The number of features in the output data.
 
     Returns:
-        tuple: A tuple containing the Keras model and its training history.
+        tuple: A tuple containing the PyTorch model and its training history.
     """
-    if load:
+    model = MLP(input_size, output_size)
+    history = {}
+    if load and os.path.exists(model_file):
         print(f"Loading model from {model_file}")
-        model = load_model(model_file)
-        history = np.load(history_file, allow_pickle='TRUE').item()
+        model.load_state_dict(torch.load(model_file))
+        if os.path.exists(history_file):
+            history = np.load(history_file, allow_pickle='TRUE').item()
     else:
         print("Creating a new model.")
-        # Define the Keras Sequential model
-        model = Sequential()
-        # Input layer: specifies the shape of the input data.
-        model.add(InputLayer(input_shape=(input_size,)))
-        # Hidden layer 1: A fully-connected layer with 32 neurons and ReLU activation.
-        model.add(Dense(32, activation='relu'))
-        # Hidden layer 2: A fully-connected layer with 32 neurons and tanh activation.
-        model.add(Dense(32, activation='tanh'))
-        # Output layer: A linear layer with a neuron for each output feature.
-        model.add(Dense(output_size))
 
-        # Print a summary of the model architecture
-        model.summary()
-
-        # Compile the model, specifying the loss function and optimizer.
-        # 'adam' is an efficient gradient descent variant.
-        # 'mean_squared_error' is a common loss function for regression problems.
-        model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
-        history = {}
-
+    print(model)
     return model, history
 
 # --- Main Script ---
@@ -153,11 +156,16 @@ X = data[:, 2:9]
 Y = data[:, 9:]
 
 # 2. Split into Training and Testing Sets
-# This is crucial to evaluate how well the model generalizes to new, unseen data.
 train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.20, random_state=42)
 
 # 3. Standardize the Data
 train_X, test_X, train_Y, test_Y, output_scaler = standardise_data(train_X, test_X, train_Y, test_Y)
+
+# Convert data to PyTorch tensors
+train_X = torch.tensor(train_X, dtype=torch.float32)
+train_Y = torch.tensor(train_Y, dtype=torch.float32)
+test_X = torch.tensor(test_X, dtype=torch.float32)
+test_Y = torch.tensor(test_Y, dtype=torch.float32)
 
 input_size = train_X.shape[1]
 output_size = train_Y.shape[1]
@@ -168,12 +176,34 @@ model, history = get_model(load_model_flag, input_size, output_size)
 # 5. Train the Model
 if train_model_flag:
     print(f"Training model for {Nepochs} epochs...")
-    train_history = model.fit(train_X, train_Y, validation_data=(test_X, test_Y), epochs=Nepochs, verbose=1)
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters())
+    
+    train_history = {'loss': [], 'val_loss': []}
+
+    for epoch in range(Nepochs):
+        model.train()
+        optimizer.zero_grad()
+        outputs = model(train_X)
+        loss = criterion(outputs, train_Y)
+        loss.backward()
+        optimizer.step()
+
+        model.eval()
+        with torch.no_grad():
+            val_outputs = model(test_X)
+            val_loss = criterion(val_outputs, test_Y)
+        
+        train_history['loss'].append(loss.item())
+        train_history['val_loss'].append(val_loss.item())
+
+        if (epoch + 1) % 10 == 0:
+            print(f'Epoch [{epoch+1}/{Nepochs}], Loss: {loss.item():.4f}, Val Loss: {val_loss.item():.4f}')
 
     # Save the trained model and the combined history
     print(f"Saving model to {model_file}")
-    model.save(model_file)
-    history = appendHist(history, train_history.history)
+    torch.save(model.state_dict(), model_file)
+    history = appendHist(history, train_history)
     np.save(history_file, history)
     print("Training complete and model saved.")
 
@@ -192,14 +222,17 @@ if history and 'loss' in history:
     ax1.legend(frameon=False)
     ax1.set_xlabel("Epoch")
     ax1.set_ylabel("Loss (MSE)")
-    ax1.set_xlim(1, len(history['loss']))
+    if len(history['loss']) > 0:
+        ax1.set_xlim(1, len(history['loss']))
     ax1.set_title('Model Training History')
 
 # Make predictions on the test set
-pred_y = model.predict(test_X)
+model.eval()
+with torch.no_grad():
+    pred_y = model(test_X).numpy()
 
 # Inverse-transform the standardized data and predictions to get them back to the original scale
-test_Y = output_scaler.inverse_transform(test_Y)
+test_Y = output_scaler.inverse_transform(test_Y.numpy())
 pred_y = output_scaler.inverse_transform(pred_y)
 
 def compare_plot(ax, pred, test, title):
