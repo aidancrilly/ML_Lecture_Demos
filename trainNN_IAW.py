@@ -3,8 +3,8 @@ Demonstration of Training a Neural Network for Physics Data Analysis.
 
 This script provides a complete workflow for training and evaluating a Multi-Layer 
 Perceptron (MLP) neural network using TensorFlow and Keras. The network is designed 
-to predict physical parameters from features of Ion Acoustic Waves (IAW), a common 
-phenomenon in plasma physics.
+to predict physical parameters from features of Ion Acoustic Wave (IAW) Thomson scattering
+spectra.
 
 This is a practical example of how neural networks can be used as surrogate models 
 to quickly approximate the results of complex experiments or simulations.
