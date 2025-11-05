@@ -249,9 +249,9 @@ def compare_plot(ax, pred, test, title):
     ax.set_aspect('equal', 'box')
 
 # Create comparison plots for each of the output features
-compare_plot(ax2, pred_y[:, 0], test_Y[:, 0], 'Output 1: Te')
-compare_plot(ax3, pred_y[:, 1], test_Y[:, 1], 'Output 2: Ti')
-compare_plot(ax4, pred_y[:, 2], test_Y[:, 2], 'Output 3: Zeff')
+compare_plot(ax2, pred_y[:, 0], test_Y[:, 0], r'$\Delta \lambda_m$')
+compare_plot(ax3, pred_y[:, 1], test_Y[:, 1], r'$\Delta \lambda_h-\Delta \lambda_l$')
+compare_plot(ax4, pred_y[:, 2], test_Y[:, 2], r'$a_\lambda$')
 
 fig.tight_layout()
 plt.show()
