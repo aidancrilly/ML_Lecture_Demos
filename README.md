@@ -13,7 +13,8 @@ Demonstrations include:
 - Markov Chain Monte Carlo with Metropolis algorithm
 - Gaussian processes
 - Bayesian Optimisation
-- Neural networks (Multi-layer perceptron)
+- Neural networks (Multi-layer perceptron and Physics Informed NN)
+- K-means clustering
 
 The required python library requirements are given in requirements.txt which can be pip installed:
 
