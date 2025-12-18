@@ -24,6 +24,10 @@ pip install -r requirements.txt
 
 Lecture recordings on YouTube:
 
+2025:
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/OVWH8ofVtBo/0.jpg)](https://youtu.be/OVWH8ofVtBo)
+
 2024:
 
 [![IMAGE ALT TEXT](http://img.youtube.com/vi/lTAUwWVcLXc/0.jpg)](https://youtu.be/kst4-cwMNKc)
